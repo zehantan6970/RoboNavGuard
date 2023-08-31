@@ -1,0 +1,69 @@
+B
+
+    颴觗l  ?              @   s^   d dl Zd dlZddd?Zdd?Zdd?Zd	d
+?Zdd?Zd
+d?Z	dd?Z
+d dlZdd?ZdS )?   N?   c          	   C   s?  t |dd?徠}|??}g }|?ttt|| d |  ??????? |?ttt|| d | d  ??????? |?ttt|| d | d  ??????? |?ttt|| d | d  ??????? |?? W dQ R X t	?|?S )u?  
+    Args:
+
+        fragmentsNum: fragmentsNum: 鍙栫n涓猺t锛?锛?锛?0锛?..锛?        pose_matrix_path: pose鏂囦欢鐨勮矾寰?
+    Returns:
+        rt
+
+    ?r)?mode?   r   ?   ?   N)?open?readlines?append?list?map?float?strip?split?close?np?array)ZfragmentsNumZpose_matrix_pathZ	start_idsr   ?lines?rt?r   ?/media/light/light_t2/PROJECTS/D3VG_large/utils/utils.py?getRt   s    (,,,r   c             C   sb   t ?|?}| dd?dd?f dd? }| dd?df dd? }t ?||?d??}|?d?| }|S )u?  
+
+    Args:
+        rt: 鍙樻崲鐭╅樀
+        points: 棰勮浆鎹㈢殑鐐逛簯鍧愭爣
+
+    Returns:
+        new_points: 杞崲鍚庣殑鐐逛簯鍧愭爣
+
+    Nr   )r   r   )r   ?asarray?dot?transpose)r   ?points?R?TZ	points_rtZ
+new_pointsr   r   r   ?transform   s    
+r   c             C   s:   g }x0| D ](}||kr
+|?t?||k?d d ? q
+W |S )Nr   )r
+   r   ?where)?arr1?arr2?indexes?valr   r   r   ?find_indexes(   s
+    
+ r$   c       
+      C   s?  t j??}t| ?dk r>tt| ?? xtd?D ]}| ?| ? q,W t j?| ?|_	|j
+ddd?\}}yP|?|?}|??}|??\}}}t?|???}	t j?d?|?|? |||g|	fS    dS dS )u?  
+
+    Args:
+        points: object鐐逛簯鐨剎yz鍧愭爣
+
+    Returns:
+        obb鍖呭洿鐩掔殑涓績鍧愭爣
+        vertex_set: 8涓《鐐瑰潗鏍?
+    ?   槿   g殭櫃櫃?)Znb_neighborsZ	std_ratiou)   /home/light/鏂囨。/0731_kinect/ply/{}.ply)NNN)?o3dZgeometryZ
+PointCloud?len?print?range?extendZutilityZVector3dVectorr   Zremove_statistical_outlierZselect_by_indexZget_oriented_bounding_boxZ
+get_centerr   r   Zget_box_points?ioZwrite_point_cloud?format)
+r   ?iZpcd?cl?indZobb?center_x?center_yZcenter_z?vertex_setr   r   r   ?get_obb.   s"    
+
+r4   c       	      C   s^   | j dd?}| jdd?}|d |d  }}|d |d  }}|d |d  }}||||||fS )z?
+    Args:
+        corner: numpy array (8,3), assume up direction is Z (batch of N samples)
+
+    Returns:
+        an array for min and max coordinates of 3D bounding box IoU
+
+    r   )?axisr   r   )?min?max)	ZcornerZ	min_coordZ	max_coordZx_minZx_maxZy_minZy_maxZz_minZz_maxr   r   r   ?get_box3d_min_maxX   s    r8   c             C   s?  t | ?\}}}}}}t |?\}}	}
+}}}
+t?||?}t?||
+?}t?||?}t?||	?}t?||?}t?||
+?}t?|| d?t?|| d? t?|| d? }|| ||  ||  }|	| ||
+  |
+|  }||| | d  }|S )z?
+    Args:
+        corners1: numpy array (8,3), assume up direction is Z
+        corners2: numpy array (8,3), assume up direction is Z
+
+    Returns:
+        iou: 3D bounding box IoU
+
+    r   g:?鈳yE>)r8   r   ?maximum?minimum)Zcorners1Zcorners2?x_min_1?x_max_1?y_min_1?y_max_1?z_min_1?z_max_1?x_min_2?x_max_2?y_min_2?y_max_2?z_min_2?z_max_2?xA?yA?zA?xB?yB?zB?inter_vol?box_vol_1?box_vol_2?iour   r   r   ?box3d_ioul   s    0rQ   c             C   s   t | |?}|S )N)rQ   )Zbb1Zbb2Ziou3dr   r   r   ?get_iou_obb?  s    
+rR   c             C   sH   xBt ?| ?D ]4}| d | }t j?|?dkr8t ?|? qt|? qW d S )N?/T)?os?listdir?path?isfile?remove?del_file)Z	path_datar.   Z	file_datar   r   r   rY   ?  s
+    rY   )r   )
+?numpyr   Zopen3dr'   r   r   r$   r4   r8   rQ   rR   rT   rY   r   r   r   r   ?<module>   s   
+*
