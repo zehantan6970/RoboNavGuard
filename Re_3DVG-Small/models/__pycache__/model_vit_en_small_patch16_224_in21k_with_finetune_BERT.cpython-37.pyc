@@ -1,0 +1,72 @@
+B
+
+    
+涇d?  ?              @   s?  d dl Z d dlZd dlZd dlmZ d dlmZmZ d dlm	Z	 d dl
+mZ ejdd? ej
+??rfdnd	Zd
+d?ZG dd
+?d
+ejj?ZG dd?dejj?ZdS )?   N)?nn)?AutoTokenizer?BertModel)?AbsolutePositionalEncoding)?build_transformer?full)?profile?cuda?cpuc                s"   t ??fdd?t|?D ???t?S )Nc                s   g | ]}t ????qS ?)?copy?deepcopy)?.0?i)?moduler   鷎/media/light/light_t2/PROJECTS/D3VG_large/models/model_vit_en_small_patch16_224_in21k_with_finetune_BERT.py?<listcomp>   s    z_get_clones.<locals>.<listcomp>)r   ?ModuleList?range?to?device)r   ?Nr   )r   r   ?_get_clones   s    r   c                   s$   e Zd Z?fdd?Zdd?Z? ZS )?LineNormLayersc                sj   t t| ??? t?||d ??t?| _t?|d ??t?| _	t?|d |??t?| _
+t?|??t?| _d S )N?   )?superr   ?__init__r   ?Linearr   r   ?liner1?LayerNorm?norm1?liner2?norm2)?selfZin_modelZ	out_model)?__class__r   r   r      s
+    zLineNormLayers.__init__c             C   s,   | ?|?}| ?|?}| ?|?}| ?|?}|S )N)r   r    r!   r"   )r#   ?xr   r   r   ?forward   s
+    
+
+
+
+zLineNormLayers.forward)?__name__?__module__?__qualname__r   r&   ?__classcell__r   r   )r$   r   r      s   r   c                   sL   e Zd Z?fdd?Zdd?Zdd?Zdd?Zd	d
+?Zdd?Zd
+d?Z	? Z
+S )?Modelc                s?  t t| ??? || _tjddd??t?| _t	|?| _
+t?d?| _
+t?d??t?| _x| j??D ]
+}d|_q^W tdd?| _t|j|j?| _t|j|j?| _t?|j|j??t?| _dd?td	d
+?D ?| _tdd?| _tdd?| _ tdd?| _!d S )
+N樯   閫   )?num_embeddings?embedding_dimzgoogle/mobilebert-uncasedF?   c             S   s   g | ]}|d  ?qS )閐   r   )r   r   r   r   r   r   3   s    z"Model.__init__.<locals>.<listcomp>i?閑   i€  i   )"r   r+   r   ?argsr   ?Embeddingr   r   ?d3_embr   ?transformerr   ?from_pretrained?tokenizerr   ?bert_model?parameters?requires_gradr   ?d3_pos_emb?hidden_dim?max_length?input_encoder_pos_emb?max_words_length?input_decoder_pos_embr   Zcls_num?classifyr   ?word2idxr   ?line1?line2?line3)r#   r3   ?param)r$   r   r   r   %   s"    
+
+zModel.__init__c             C   s<  | ?|?\}}t|?}| ?|?}| ?| jjd?}||7 }|?d?}| ?|?}| ?|?}|| }	| ?|| jj?}
+| ?|| jj?}| j|d| jjddd??t?}d|d ?????t? }
+| jf |?}|j}| ?|?}t|j? | ?|	?d	d
+d?||
+|?d	d
+d?|
+?d	d
+d?|?d	d
+d??}| ?|?d	d
+d?d d ?d
+f ?}|S )Nr0   r   Tr>   ?pt)?add_special_tokensr>   ?padding?return_tensorsg      ??attention_mask?   r   )?image_encoding?len?d3_encodingr<   r3   r>   ?flattenrD   rE   r?   rA   r@   r8   r   r   ?clone?detachr9   ?last_hidden_staterF   ?print?shaper6   ?permuterB   )r#   ?batch_image_patches?d3_patches?questionZimage_embedding_padedZsrc_padding_mask?batch_size?d3_embedding_padedZd3_pos_embeddingZ
+src_embeddingZsrc_pos_embeddingZtgt_pos_embeddingZtgt_tokenized_textZtgt_attention_mask?outputsZ
+tgt_embedding?hs?outputr   r   r   r&   8   s.    
+
+
+
+
+
+ z
+Model.forwardc       	         s?  g }x倈D ]z}g }xF|D ]>}??t?t??fdd?|D ????t???t?}|?|? qW t?|??t?}???j
+j|?}|?|? q
+W t?|??t?}|S )Nc                s"   g | ]}?j ?tt|?d ???qS )r   )rC   ?index?round?float)r   r   )r#   r   r   r   l   s    z%Model.d3_encoding.<locals>.<listcomp>)r5   ?torch?as_tensor?np?arrayr   r   ?append?stack?d3_paddingr3   r>   )	r#   Zbatch_d3_patchesZbatch_d3_featurerY   Zd3_lists?dZ
+d3_featureZd3_arrs_tensorZd3_arrs_tensor_padedr   )r#   r   rP   f   s    
+
+,zModel.d3_encodingc             C   s?  g }g }x`|D ]X}g }x|D ]}|?|? qW t?|??t?}| ?| jj|?\}}	|?|? |?|	? qW t?|??t?}
+t?|??t?}|
+|fS )u?  
+
+        Args:
+            batch_image_patches: shape=(batch,n,768)
+
+        Returns:
+            batch_image_feature: shape=(batch,max_length,768) dim=clip鎻愬彇鐨勭壒寰佺淮搴?
+        )rg   rc   rh   r   r   ?patches_paddingr3   r>   )r#   rX   Zbatches_features_listZ	mask_list?image_patchesZpatches_list?imageZpatches_tensorZpatches_features_paded?padding_maskZbatches_featuresZ
+batch_maskr   r   r   rN   t   s    
+
+
+
+zModel.image_encodingc             C   sp   t j|t ?||jd  dg??t?fdd?}t jt?dg|jd  dg||jd    ?t j	d??t?}||fS )uB  
+
+        Args:
+            max_length: 鏈€澶ч暱搴?            image_qurey: 娌℃湁琛ラ綈鐨勭姸鎬?
+        Returns:
+            batch_image_qurey_paded: 琛ラ綈涔嬪悗鐨勫簭鍒楋紝鐜板湪灏卞彲浠ュ綋鍋氭槸涓€涓猲lp鏉ュ鐞?shape=(b,l,dim)
+            batch_image_qurey_padding_mask: 琛ラ綈涔嬪悗鐨刴ask,shape=(b,l)
+        r   i€  )?dimrM   )?dtype)
+rc   ?concat?zerosrV   r   r   ?tensorre   rf   ?float32)r#   r>   Zimage_queryZimage_qurey_padedrn   r   r   r   rk   ?  s    ((zModel.patches_paddingc             C   s2   t j|t ?||jd  ddg??t?fdd?}|S )Nr   r0   r-   )ro   )rc   rq   rr   rV   r   r   )r#   r>   Zd3_embeddingr\   r   r   r   ri   ?  s    *zModel.d3_paddingc             C   s   dt ?|d ? }|S )Ng      ?rL   )rc   rs   )r#   ?tokenized_textZmask_tensorr   r   r   ?key_padding_mask?  s    zModel.key_padding_mask)r'   r(   r)   r   r&   rP   rN   rk   ri   rv   r*   r   r   )r$   r   r+   $   s   .r+   )r   ?numpyre   rc   r   ?transformersr   r   Zmodels.pos_embr   Zmodels.transformerr   ?set_printoptionsr	   ?is_availabler   r   ?Moduler   r+   r   r   r   r   ?<module>   s   
