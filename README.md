@@ -11,9 +11,9 @@ sh dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 8 --data-
 ## PyraBiNet++ Training
 Use 4 GPUs to train pyrabinet+Semantic FPN on the ADE20K dataset, run:
 dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 4
-## Evaluation
+## PyraBiNet++ Evaluation
 dist_test.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py /path/to/checkpoint_file 4 --out results.pkl --eval mIoU
-## Calculating FLOPS & Params
+## Calculating PyraBiNet++ FLOPS & Params
 python flops.py
 
 ## Acknowledgement
