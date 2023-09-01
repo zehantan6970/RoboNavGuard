@@ -39,6 +39,6 @@ dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 4
 
 Evaluation:
 dist_test.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py /path/to/checkpoint_file 4 --out results.pkl --eval mIoU
-
+The PyraBiNet++ weight module files can be downloaded from this link: https://drive.google.com/file/d/1--yrclwR8Is7NgzylTBT92rvKKFh4Q7o/view?usp=drive_link
 Calculating FLOPS & Params:
 python flops.py
