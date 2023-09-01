@@ -1,0 +1,23 @@
+U
+
+    鑔:  ?                  @   sl   d dl Z d dlZd dlmZmZ dZee jd< dZdZ	eee	dd?Z
+d
+d	d
+?ZedkrhdZ
+dZee
+e? dS )?   N)?init_detector?inference_detectorzY/home/light/anaconda3/envs/openmmlab/lib/python3.7/site-packages/cv2/qt/plugins/platforms?QT_QPA_PLATFORM_PLUGIN_PATHzx/home/light/gree/slam/D3VG/mmdetection_master/configs/mask_rcnn/mask_rcnn_r101_caffe_fpn_mstrain-poly_3x_coco-trash_a.pyzI/media/light/light_t2/PROJECTS/model_checkpoints/checkpoints/epoch_62.pthzcuda:0)?devicec                 C   s?  g }g }g }t t| ?}tj| |d|dd? tjdd?df }t?|dk?d }tj|dk }t|?D ]^\}	}
+tj|
+ dkrd|?tj|
+ ? |?tj
+||	  ? |?tjdd?dd?f ||	  ? qdtd|? |||fS )	u?  
+    Args:
+        img: 杈撳叆鐨勫浘鐗?        output_dir: 鍒嗗壊缁撴灉淇濆瓨鏂囦欢澶硅矾寰?
+    Returns:
+        boxes_class:鐩爣妗嗙被鍒?segs:mask鍧愭爣,boxes:鐩爣妗嗗潗鏍?    g      ?F)Z	score_thr?out_file?showN?r   )?book?pictureu
+   box鐨勭被鍒?)r   ?modelZshow_resultZBOXES?np?whereZLABEL?enumerate?CLASSES?appendZSEGS?print)?img?output_dir?boxes_class?segs?boxes?result?scoreZchoose_index?label_id?i?l?r   鶳/media/light/light_t2/PROJECTS/D3VG_v1/segment_model/mmdetection/mmdet_demo_2.py?generate_seg   s    
+
+&
+r   ?__main__u7   /home/light/鏂囨。/0731/image/rgb/1690775774.005657.png)N)?os?numpyr   Z
+mmdet.apisr   r   ?envpath?environ?config_file?checkpoint_filer   r   ?__name__r   r   r   r   r   r   ?<module>   s   
+
+!
