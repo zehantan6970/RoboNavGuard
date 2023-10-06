@@ -29,7 +29,10 @@ Data Preparation
 │   │   │   ├── val
 
 3. Training Process:
-In the training phase, the backbone is initialized with the weights pre-trained on ImageNet, and other newly added layers are initialized with Xavier. We optimize our models using AdamW  with an initial learning rate of 1e-4. We train our models for 80k iterations with a batch size of 16. The learning rate is decayed following the polynomial decay schedule with a power of 0.9. We randomly resize and crop the image to 512 × 512 for training.
+In the training phase, the backbone is initialized with the weights pre-trained on ImageNet, and other newly added layers are initialized with Xavier. 
+We optimize our models using AdamW with an initial learning rate of 1e-4. We train our models for 80k iterations with a batch size of 16. 
+The learning rate is decayed following the polynomial decay schedule with a power of 0.9. 
+We randomly resize and crop the image to 512 × 512 for training.
 
 4. Pre-Training:
 Train 300epochs on the ImageNet dataset with 8 GPUs:
