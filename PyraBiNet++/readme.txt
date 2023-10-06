@@ -28,20 +28,25 @@ Data Preparation
 │   │   │   │   ├── zzz{seg_map_suffix}
 │   │   │   ├── val
 
+3. Training Process:
+In the training phase, the backbone is initialized with the weights pre-trained on ImageNet, and other newly added layers are initialized with Xavier. We optimize our models using AdamW  with an initial learning rate of 1e-4. We train our models for 80k iterations with a batch size of 16. The learning rate is decayed following the polynomial decay schedule with a power of 0.9. We randomly resize and crop the image to 512 × 512 for training.
 
-Pre-Training:
+4. Pre-Training:
 Train 300epochs on the ImageNet dataset with 8 GPUs:
 sh dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 8 --data-path /path/to/imagenet
 
-Training:
+5. Training:
 Our PyraBiNet++ backbone, pre-trained on the ImageNet dataset, strictly conformed to PVT training configurations and utilized Semantic FPN as its segmentation head. 
 
 Use 4 GPUs to train pyrabinet+Semantic FPN on the ADE20K dataset, run:
 dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 4
 
-Evaluation:
+6. Evaluation:
 dist_test.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py /path/to/checkpoint_file 4 --out results.pkl --eval mIoU
 The PyraBiNet++ weight module files can be downloaded from this link: https://drive.google.com/file/d/1--yrclwR8Is7NgzylTBT92rvKKFh4Q7o/view?usp=drive_link
 
 Calculating FLOPS & Params:
 python flops.py
+
+7. Model Deployment
+ PyraBiNet++ was deployed directly using openmmlab's mmdeploy and inference was performed with onnxruntime. 
