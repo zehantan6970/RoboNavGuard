@@ -40,3 +40,19 @@
       'pillow': 2576, 'paper': 391, 'towel': 466, 'curtain': 784, 'clothes': 682, 'shelves': 1285, 'lamp': 501, 'window': 1821,
       'blinds': 347, 'dresser': 480, 'desk': 2985, 'shower curtain': 271, 'whiteboard': 433, 'microwave': 1513, 'bookshelf': 863,
       'bag': 392, 'night stand': 397, 'bathtub': 316, 'mirror': 325, 'toaster': 195
+## 7.Model  Deployment
+#### We will provide the onnx file exported from the 3dvg model and provide the code for inference using the onnxruntime. 
+#### The instance segmentation model can be deployed using [mmdeploy](https://github.com/open-mmlab/mmdeploy/blob/v0.12.0/docs/en/get_started.md),If your environment meets mmdeploy's requirements, you can do the following
+    1.Convert Model
+        python mmdeploy/tools/deploy.py \
+        mmdeploy/configs/mmdet/instance-seg/instance-seg_tensorrt-fp16_dynamic-320x320-1344x1344.py \
+        mmdetection/configs/mask_rcnn/mask_rcnn_r101_fpn_mstrain-poly_3x_coco.py \
+        mask_rcnn_r101_fpn_mstrain-poly_3x_coco_20210524_200244-5675c317.pth \
+        mmdetection/demo/demo.jpg \
+        --work-dir mmdeploy_model/mask-rcnn \
+        --device cuda \
+        --dump-info
+    2.object_detection_for_d3vg.py
+        model_path     -------------------------------> mmdeploy_model/mask-rcnn
+    3.demo_for_kinect.py
+    Annotating code "from segment_model.mmdetection.mmdet_demo_2 import generate_seg " and change to "from segment_model.mmdeploy.demo.python.object_detection_for_d3vg import generate_seg"
