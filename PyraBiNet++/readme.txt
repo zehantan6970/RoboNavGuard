@@ -34,6 +34,8 @@ Train 300epochs on the ImageNet dataset with 8 GPUs:
 sh dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 8 --data-path /path/to/imagenet
 
 Training:
+Our PyraBiNet++ backbone, pre-trained on the ImageNet dataset, strictly conformed to PVT training configurations and utilized Semantic FPN as its segmentation head. 
+
 Use 4 GPUs to train pyrabinet+Semantic FPN on the ADE20K dataset, run:
 dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 4
 
