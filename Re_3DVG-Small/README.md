@@ -1,7 +1,7 @@
 # Re_3DVG-Small
 ## 1. Environment
     torch==1.13.1+cuda==11.7 mmdet==2.25.2
-    You need to port segment_model/mmdetection/mmdet to your built environment, because we added some necessary variables
+    You need to port segment_model/mmdetection/mmdet to your built environment because we added some necessary variables
 ## 2.Weights
     #### You can download the required weights from this link:https://drive.google.com/drive/folders/1plOlm15jFwyiE8LH_6qQPZ-cmIWE6LQ6?usp=drive_link
 ## 3.Configuration method
@@ -19,11 +19,11 @@
         vit_file          -------------------------------> pytorch_vit_19.pt
 #### In order to be able to make the instance segmentation more accurate, you can choose other proper weights file from [mmdetection](https://github.com/open-mmlab/mmdetection/tree/v2.25.2)
 ## 4. Run demo
-#### You can test your own data by running demo_for_kinect.py yourself, The size of your rgb data and depth data must be the same.
-## 5. comparative trial on reorganized scannet datas
+#### You can test your data by running demo_for_kinect.py yourself, The size of your RGB data and depth data must be the same.
+## 5. comparative trial on reorganized scannet data
 ### [scannet_v7 data link](https://drive.google.com/file/d/1hmSnEwCgXDu0gp5XcOqoMvuX91yjA7x5/view?usp=drive_link) This includes custom ScanNet_frames_25k dataset (test)
 ### [scannet_frames_test](https://drive.google.com/file/d/159OjK98WHSKSngMPA-5sCUN-A55EEZdF/view?usp=drive_link) 
-#### You need to change the path of scannet to the scannet_v7 folder, and change the path of scannet_frames_test to the scannet_frames_test folder, before you run this code, please change the following code:
+#### You need to change the path of scannet to the scannet_v7 folder and change the path of scannet_frames_test to the scannet_frames_test folder, before you run this code, please change the following code:
     1.mmdet_demo_2.py
         config_file       -------------------------------> mask_rcnn_r101_caffe_fpn_mstrain-poly_3x_coco-trash_a.py
         checkpoint_file   -------------------------------> epoch_62.pth (The weight file is trained on the scannet dataset)
@@ -42,8 +42,8 @@
       'bag': 392, 'night stand': 397, 'bathtub': 316, 'mirror': 325, 'toaster': 195
 ## 7.Model  Deployment
 #### We will provide the onnx file exported from the 3dvg model and provide the code for inference using the onnxruntime. 
-#### The instance segmentation model can be deployed using [mmdeploy](https://github.com/open-mmlab/mmdeploy/blob/v0.12.0/docs/en/get_started.md),If your environment meets mmdeploy's requirements, you can do the following
-    1.Convert Model
+#### The instance segmentation model can be deployed using [mmdeploy](https://github.com/open-mmlab/mmdeploy/blob/v0.12.0/docs/en/get_started.md), If your environment meets mmdeploy's requirements, you can do the following
+    1. Convert Model
         python mmdeploy/tools/deploy.py \
         mmdeploy/configs/mmdet/instance-seg/instance-seg_tensorrt-fp16_dynamic-320x320-1344x1344.py \
         mmdetection/configs/mask_rcnn/mask_rcnn_r101_fpn_mstrain-poly_3x_coco.py \
