@@ -28,15 +28,16 @@ Data Preparation
 │   │   │   │   ├── zzz{seg_map_suffix}
 │   │   │   ├── val
 
-3. Training Process:
-In the training phase, the backbone is initialized with the weights pre-trained on ImageNet, and other newly added layers are initialized with Xavier. 
-We optimize our models using AdamW with an initial learning rate of 1e-4. We train our models for 80k iterations with a batch size of 16. 
-The learning rate is decayed following the polynomial decay schedule with a power of 0.9. 
-We randomly resize and crop the image to 512 × 512 for training.
 
-4. Pre-Training:
+3. Pre-Training:
 Train 300epochs on the ImageNet dataset with 8 GPUs:
 sh dist_train.sh configs/sem_fpn/Pyrabinet/fpn_pyrabinet_ade20k_80k.py 8 --data-path /path/to/imagenet
+
+4. Training Process:
+In the training phase, the backbone is initialized with the weights pre-trained on ImageNet, and other newly added layers are initialized with Xavier. 
+We optimize our models using AdamW with an initial learning rate of 1e-4. We train our models for 80k iterations with a batch size of 16 on 4 V100 GPUs.
+The learning rate is decayed following the polynomial decay schedule with a power of 0.9. 
+We randomly resize and crop the image to 512 × 512 for training.
 
 5. Training:
 Our PyraBiNet++ backbone, pre-trained on the ImageNet dataset, strictly conformed to PVT training configurations and utilized Semantic FPN as its segmentation head. 
