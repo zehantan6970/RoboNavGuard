@@ -41,7 +41,7 @@
       'blinds': 347, 'dresser': 480, 'desk': 2985, 'shower curtain': 271, 'whiteboard': 433, 'microwave': 1513, 'bookshelf': 863,
       'bag': 392, 'night stand': 397, 'bathtub': 316, 'mirror': 325, 'toaster': 195
 ## 7.Model  Deployment
-#### We will provide the onnx file exported from the 3dvg model and provide the code for inference using the onnxruntime. 
+#### We will provide the onnx file exported from the 3dvg model and provide the code for inference using the onnxruntime. [Re_3DVG-Small Chinese onnx files](https://drive.google.com/drive/folders/1hdirYsGVcECl9Zu9oCxyiOWUFxhgmM7K)
 #### The instance segmentation model can be deployed using [mmdeploy](https://github.com/open-mmlab/mmdeploy/blob/v0.12.0/docs/en/get_started.md), If your environment meets mmdeploy's requirements, you can do the following
     1. Convert Model
         python mmdeploy/tools/deploy.py \
@@ -56,3 +56,5 @@
         model_path     -------------------------------> mmdeploy_model/mask-rcnn
     3.demo_for_kinect.py
     Annotating code "from segment_model.mmdetection.mmdet_demo_2 import generate_seg " and change to "from segment_model.mmdeploy.demo.python.object_detection_for_d3vg import generate_seg"
+    4. demo_for_kinect_zh_onnx.py
+    Onnx files Chinese inference code
