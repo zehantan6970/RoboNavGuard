@@ -3,7 +3,7 @@
     torch==1.13.1+cuda==11.7 mmdet==2.25.2
     You need to port segment_model/mmdetection/mmdet to your built environment because we added some necessary variables
 ## 2.Weights
-    #### You can download the required weights from this [link](https://drive.google.com/file/d/159OjK98WHSKSngMPA-5sCUN-A55EEZdF/view?usp=drive_link)
+    #### You can download the required weights from this link: https://drive.google.com/file/d/159OjK98WHSKSngMPA-5sCUN-A55EEZdF/view?usp=drive_link
 ## 3.Configuration method
 ### You need to modify the following code
     1.demo_for_kinect.py     
