@@ -54,3 +54,10 @@ python flops.py
 
 7. Model Deployment
  PyraBiNet++ was deployed directly using openmmlab's mmdeploy and inference was performed with onnxruntime. 
+
+ To export the PyraBiNet++ model to ONNX format, utilize the following command:
+ python pytorch2onnx.py --config path/to/config_file --checkpoint path/to/checkpoint --input-img path/to/test_image
+
+ For inference of the ONNX model on the ROS platform, execute the subsequent command:
+ python inference_ros.py
+
