@@ -52,7 +52,7 @@ The PyraBiNet++ weight module files can be downloaded from this link: https://dr
 Calculating FLOPS & Params:
 python flops.py
 
-7. Model Deployment
+7. Model Deployment:
  PyraBiNet++ was deployed directly using openmmlab's mmdeploy and inference was performed with onnxruntime. 
 
  To export the PyraBiNet++ model to ONNX format, utilize the following command:
